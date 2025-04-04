@@ -9,9 +9,10 @@ import pandas as pd
 import numpy as np
 
 
-mol1_df = pd.read_csv("assets/simulation_results_m1.csv")
-# mol2_df = pd.read_csv("assets/")
-mol3_df = pd.read_csv("assets/simulation_results_m3.csv")
+mol1_df = pd.read_csv("assets/simulation_results_M1.csv")
+mol2_df = pd.read_csv("assets/simulation_results_M2.csv")
+mol3_df = pd.read_csv("assets/simulation_results_M3.csv")
+mol4_df = pd.read_csv("assets/simulation_results_M4.csv")
 
 
 def plotter(df, **kwargs):
@@ -22,8 +23,9 @@ def plotter(df, **kwargs):
             (df["top_X_percent"] == kwargs['topX'])
             # & (df["simulations"] == kwargs['simul'])  ## Not yet ready
             ]
-        fig = px.line(df_subset, x='correlation', y='probability', range_y=[0, 1.2])
-        fig.update_yaxes(tickformat=".2f")
+        fig = px.line(df_subset, x='correlation', y='probability', markers=True, color_discrete_sequence=['magenta'], height=800)
+        fig.update_yaxes(tickformat=".4f")
+        fig.update_traces(cliponaxis=False)
         return fig
     elif kwargs['k1'] is None:  # Corr, K2, topX, simul
         df_subset = df[
@@ -32,8 +34,9 @@ def plotter(df, **kwargs):
             (df["top_X_percent"] == kwargs['topX'])
             # & (df["simulations"] == kwargs['simul'])  ## Not yet ready
             ]
-        fig = px.line(df_subset, x='k1', y='probability', range_y=[0, 1.2])
-        fig.update_yaxes(tickformat=".2f")
+        fig = px.line(df_subset, x='k1', y='probability', markers=True, color_discrete_sequence=['magenta'], height=800)
+        fig.update_yaxes(tickformat=".4f")
+        fig.update_traces(cliponaxis=False)
         return fig
     elif kwargs['k2'] is None:  # Corr, K1, topX, simul
         df_subset = df[
@@ -42,7 +45,9 @@ def plotter(df, **kwargs):
             (df["top_X_percent"] == kwargs['topX'])
             # & (df["simulations"] == kwargs['simul'])  ## Not yet ready
             ]
-        fig = px.line(df_subset, x='k2', y='probability')
+        fig = px.line(df_subset, x='k2', y='probability', markers=True, color_discrete_sequence=['magenta'], height=800)
+        fig.update_yaxes(tickformat=".4f")
+        fig.update_traces(cliponaxis=False)
         return fig
     elif kwargs['topX'] is None:  # Corr, K1, K2, simul
         df_subset = df[
@@ -51,7 +56,9 @@ def plotter(df, **kwargs):
             (df["k2"] == kwargs['k2'])
             # & (df["simulations"] == kwargs['simul'])  ## Not yet ready
             ]
-        fig = px.line(df_subset, x='top_X_percent', y='probability')
+        fig = px.line(df_subset, x='top_X_percent', y='probability', markers=True, color_discrete_sequence=['magenta'], height=800)
+        fig.update_yaxes(tickformat=".4f")
+        fig.update_traces(cliponaxis=False)
         return fig
     elif kwargs['simul'] is None:  # Corr, K1, K2, topX
         pass
@@ -60,7 +67,7 @@ def plotter(df, **kwargs):
         return None
 
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP])
 
 SIDEBAR = html.Div([
     # html.H2("Sidebar", className="display-4"),
@@ -83,7 +90,7 @@ SIDEBAR = html.Div([
                           style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}),
                 # daq.NumericInput(id='correlation-input', value=0, min=-1, max=1, style={'margin-bottom': '1rem'}),
                 # dbc.FormText("Enter specific value for correlation: ", color="secondary"),
-                dbc.Input(type="number", id="correlation-input", min=-1, max=1, step=0.01, placeholder="Enter correlation value",
+                dbc.Input(type="number", id="correlation-input", min=-1, max=1, step=0.1, placeholder="Enter correlation value",
                           style={'margin-left': '1rem', 'margin-bottom': '1rem', 'width': '10rem'}),
                 dcc.Slider(
                     id='correlation-slider',
@@ -104,16 +111,16 @@ SIDEBAR = html.Div([
             html.Div([
                 dbc.Label("K1", html_for='k1-slider',
                           style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}),
-                dbc.Input(type="number", id="k1-input", min=0, max=1758, step=50, placeholder="Enter K1 samples",
+                dbc.Input(type="number", id="k1-input", min=50, max=1750, step=50, placeholder="Enter K1 samples",
                           style={'margin-left': '1rem', 'margin-bottom': '1rem', 'width': '10rem'}),
                 dcc.Slider(
                     id='k1-slider',
-                    min=0,
-                    max=1758,
+                    min=50,
+                    max=1750,
                     step=50,
                     value=100,
                     tooltip={"placement": "bottom", "always_visible": False},
-                    marks={(r := round(1758*x)): str(r) for x in np.arange(0, 1.25, 0.25)},
+                    marks={(r := round(1750*x)): str(r) for x in np.arange(0, 1.25, 0.25)},
                     className="slider-style"
                 ),
                 dbc.Tooltip(
@@ -125,16 +132,16 @@ SIDEBAR = html.Div([
             html.Div([
                 dbc.Label("K2", html_for='k2-slider',
                           style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}),
-                dbc.Input(type="number", id="k2-input", min=0, max=1758, step=50, placeholder="Enter K2 samples",
+                dbc.Input(type="number", id="k2-input", min=1, max=20, step=1, placeholder="Enter K2 samples",
                           style={'margin-left': '1rem', 'margin-bottom': '1rem', 'width': '10rem'}),
                 dcc.Slider(
                     id='k2-slider',
-                    min=0,
-                    max=1758,
-                    step=50,
-                    value=100,
+                    min=1,
+                    max=20,
+                    step=1,
+                    value=1,
                     tooltip={"placement": "bottom", "always_visible": False},
-                    marks={(r := round(1758*x)): str(r) for x in np.arange(0, 1.25, 0.25)},
+                    marks={(r := round(20*x)): str(r) for x in np.arange(0, 1.25, 0.25)},
                     className="slider-style"
                 ),
                 dbc.Tooltip(
@@ -146,16 +153,16 @@ SIDEBAR = html.Div([
             html.Div([
                 dbc.Label("Top X%", html_for='topX-slider',
                           style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}),
-                dbc.Input(type="number", id="topX-input", min=0, max=1758, step=50, placeholder="Enter Top X% ",
+                dbc.Input(type="number", id="topX-input", min=1, max=20, step=1, placeholder="Enter Top X% ",
                           style={'margin-left': '1rem', 'margin-bottom': '1rem', 'width': '10rem'}),
                 dcc.Slider(
                     id='topX-slider',
-                    min=0,
-                    max=100,
-                    step=5,
-                    value=10,
+                    min=1,
+                    max=20,
+                    step=1,
+                    value=1,
                     tooltip={"placement": "bottom", "always_visible": False},
-                    marks={x: str(x) for x in range(0, 101, 25)},
+                    marks={x: str(x) for x in range(0, 21, 1)},
                     className="slider-style"
                 ),
                 dbc.Tooltip(
@@ -197,7 +204,8 @@ MAIN_CONTENT = html.Div([
                        dbc.Tab(label='K2', id='k2-tab', tab_id='tab-graph-3', children=[dcc.Graph(id='graph-3')], class_name="", tab_class_name="nav nav-pills"),
                        dbc.Tab(label='Top X%', id='topX-tab', tab_id='tab-graph-4', children=[dcc.Graph(id='graph-4')], class_name="", tab_class_name="nav nav-pills"),
                        dbc.Tab(label='Simulations', id='simul-tab', tab_id='tab-graph-5', children=[dcc.Graph(id='graph-5')], class_name="", tab_class_name="nav nav-pills")],
-             className="graph-tabs-container")
+             className="graph-tabs-container"),
+    dbc.Button([html.Img(src="/assets/copilot-icon.svg", style={"height": "10px", "marginRight": "4px"}), "Copilot"], color="primary", style={"margin-top": "2px", "width": "20%"})
 ], className="content-style")
 
 
@@ -226,7 +234,7 @@ app.layout = dbc.Container(
 )
 def graphs_tabs_render(active_tab):
     if active_tab == 'tab-graph-1':  # Correlation
-        update_1 = "sidebar-div-disabled" # Greyout
+        update_1 = "sidebar-div-disabled"  # Greyout
         update_2 = "sidebar-div"  # Color back
         return [update_1, update_2, update_2, update_2, update_2]
     elif active_tab == 'tab-graph-2':
@@ -250,27 +258,52 @@ def graphs_tabs_render(active_tab):
 
 # Callback for sidebar adjustments for graphs
 @app.callback(
-    [Output("graph-1", "figure"),
+    [
+     Output("graph-1", "figure"),
      Output("graph-2", "figure"),
      Output("graph-3", "figure"),
      Output("graph-4", "figure"),
-     Output("graph-5", "figure")],
+     Output("graph-5", "figure"),
 
-    [Input("molecule-tabs", "active_tab"),
+     # Output("correlation-input", "value"),
+     # Output("k1-input", "value"),
+     # Output("k2-input", "value"),
+     # Output("topX-input", "value"),
+     # Output("simul-input", "value"),
+     #
+     # Output("correlation-slider", "value"),
+     # Output("k1-slider", "value"),
+     # Output("k2-slider", "value"),
+     # Output("topX-slider", "value"),
+     # Output("simul-slider", "value")
+     ],
+
+    [
+     Input("molecule-tabs", "active_tab"),
      Input("graphs-tabs", "active_tab"),
+
      Input("correlation-slider", "value"),
      Input("k1-slider", "value"),
      Input("k2-slider", "value"),
      Input("topX-slider", "value"),
-     Input("simul-slider", "value")],
+     Input("simul-slider", "value"),
+
+     # Input("correlation-input", "value"),
+     # Input("k1-input", "value"),
+     # Input("k2-input", "value"),
+     # Input("topX-input", "value"),
+     # Input("simul-input", "value"),
+    ],
 )
 def correlation_slider_graph_render(mol_active_tab, grph_active_tab, corr_slr_val, k1_slr_val, k2_slr_val, topX_slr_val, simul_slr_val):
     df = {
         "tab-molecule-1": mol1_df,
-        # "tab-molecule-2": mol2_df,
+        "tab-molecule-2": mol2_df,
         "tab-molecule-3": mol3_df,
-        # "tab-molecule-4": mol4_df,
+        "tab-molecule-4": mol4_df,
     }.get(mol_active_tab)
+
+    topX_slr_val = (topX_slr_val / 100)
 
     # Temporary Adjustment
     corr_slr_val = max(min(corr_slr_val, df['correlation'].max()), df['correlation'].min())
