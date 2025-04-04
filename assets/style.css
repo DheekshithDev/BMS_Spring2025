@@ -38,13 +38,44 @@
 }
 
 .sidebar-div {
-    border-bottom: 1px solid #d3d3d3;
+    /*border-bottom: 1px solid #d3d3d3;*/
+    border-bottom: none;
     padding-bottom: 10px;
     margin-top: 1rem;
-    /* pointerEvents: none;
-    opacity: 0.5; */
 }
+
+.sidebar-div-disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/*.sidebar-card {*/
+/*    background-color: #B03DBE !important;*/
+/*}*/
+
+.sidebar-card {
+    /*background-color: #B03DBE !important;*/
+    border: 2px solid #B03DBE;  /* Change #FF5733 to your desired border color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Adds a subtle shadow to make the card stand out */
+    border-radius: 0.25rem;  /* Optional: adjust border radius if needed */
+}
+.sidebar-card-header {
+  /*background-color: #6f42c1;  !* A purple shade for the header background *!*/
+  /*color: white;               !* White text for contrast *!*/
+  /*!*padding: 1rem;              !* Adjust padding as needed *!*!*/
+  /*border-bottom: 3px solid #5a32a3;  !* A darker border at the bottom *!*/
+  /*font-size: 1.25rem;         !* Larger text size *!*/
+  font-weight: bold !important;          /* Bold text */
+  text-align: center;         /* Center the header text */
+}
+
+
+.molecule-tabs .nav-link {
+    color: #B03DBE !important;
+}
+
 /* Sidebar Styling-END */
+
 
 /* Custom Slider Styling-START */
 .slider-style .rc-slider-track {
@@ -71,50 +102,54 @@
 .content-style {
     /* margin-left: 30rem;
     margin-right: 2rem; */
-    padding: 2rem 1rem;
+    padding: 1rem 1rem;
 }
 
-/*.graph-tile {*/
-/*    width: 250px;   !* Fixed width *!*/
-/*    height: 200px;  !* Fixed height *!*/
-/*    transition: all 0.3s ease-in-out;*/
-/*    border: 1px solid #c659b9;*/
-/*    padding: 1px;*/
-/*    margin: 0px;*/
-/*    overflow: hidden; !* Ensures content doesn't spill over *!*/
-/*    display: flex;*/
-/*    justify-content: center;*/
-/*    align-items: center;*/
-/*}*/
-/*.graph-tile:hover {*/
-/*    border-color: #007bff;*/
-/*    background-color: #f0f0f0;*/
-/*    cursor: pointer;*/
+#graph-1,
+#graph-2,
+#graph-3,
+#graph-4,
+#graph-5 {
+  width: 100%;
+  height: 600px;
+}
+
+/*.graph-tabs-container .nav-tabs {*/
+
 /*}*/
 
-.graph-tabs-container {
-    /*display: flex;*/
-    border-bottom: 1px solid #ccc; /* separates tabs from content */
+.graph-tabs-container .nav-link {
+    /*border-radius: 20px !important;*/
+    /*background-color: #D14CE0 !important;*/
+    /*color: white !important;*/
+    /*font-weight: bold;*/
+    /*font-size: 16px;*/
+    /*padding: 10px 24px;*/
+    /*margin: 0 6px 0 0;*/
+    /*cursor: pointer;*/
+    /*transition: background-color 0.2s ease, transform 0.1s ease;*/
+    /*text-align: center;*/
+}
+.graph-tabs-container .nav-link:not(.active) {
+    color: #B03DBE; /* Replace with your desired color */
+}
+.graph-tabs-container .nav-item {
+    flex: 1;
 }
 
-/* Basic style for each tab */
-.graph-tabs-container .graph-tabs {
-    border: none;
-    /* Fully round all corners to create a pill shape */
-    border-radius: 9999px;
-    background-color: #e8eaf6; /* mild purple */
-    padding: 10px 20px;
-    margin: 0 6px 0 0; /* small right margin to separate each pill */
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    display: inline-block;
+.graph-tabs-container .nav-link:hover {
+    background-color: #B03DBE !important;
+    color: white;
+    /*font-weight: bold;*/
+    transform: scale(1.03);
 }
 
-.graph-tabs-container .graph-tabs:hover {
-    background-color: #EBBEFA; /* slightly darker on hover */
+.graph-tabs-container .nav-link.active {
+    font-weight: bold;
+    background-color: #B03DBE !important;  /* Keep selected tab dark */
 }
 
-/* Style for the selected tab */
+/*!* Style for the selected tab *!*/
 /*!* Dash adds a custom attribute to the selected tab which we can target *!*/
 /*.graph-tabs-container .graph-tabs[data-dash-tab-selected="true"] {*/
 /*    background-color: #ffffff;*/

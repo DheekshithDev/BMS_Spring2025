@@ -9,6 +9,57 @@ import pandas as pd
 import numpy as np
 
 
+mol1_df = pd.read_csv("assets/simulation_results_m1.csv")
+# mol2_df = pd.read_csv("assets/")
+mol3_df = pd.read_csv("assets/simulation_results_m3.csv")
+
+
+def plotter(df, **kwargs):
+    if kwargs['corr'] is None:  # K1, K2, topX, simul
+        df_subset = df[
+            (df["k1"] == kwargs['k1']) &
+            (df["k2"] == kwargs['k2']) &
+            (df["top_X_percent"] == kwargs['topX'])
+            # & (df["simulations"] == kwargs['simul'])  ## Not yet ready
+            ]
+        fig = px.line(df_subset, x='correlation', y='probability', range_y=[0, 1.2])
+        fig.update_yaxes(tickformat=".2f")
+        return fig
+    elif kwargs['k1'] is None:  # Corr, K2, topX, simul
+        df_subset = df[
+            (df["correlation"] == kwargs['corr']) &
+            (df["k2"] == kwargs['k2']) &
+            (df["top_X_percent"] == kwargs['topX'])
+            # & (df["simulations"] == kwargs['simul'])  ## Not yet ready
+            ]
+        fig = px.line(df_subset, x='k1', y='probability', range_y=[0, 1.2])
+        fig.update_yaxes(tickformat=".2f")
+        return fig
+    elif kwargs['k2'] is None:  # Corr, K1, topX, simul
+        df_subset = df[
+            (df["correlation"] == kwargs['corr']) &
+            (df["k1"] == kwargs['k1']) &
+            (df["top_X_percent"] == kwargs['topX'])
+            # & (df["simulations"] == kwargs['simul'])  ## Not yet ready
+            ]
+        fig = px.line(df_subset, x='k2', y='probability')
+        return fig
+    elif kwargs['topX'] is None:  # Corr, K1, K2, simul
+        df_subset = df[
+            (df["correlation"] == kwargs['corr']) &
+            (df["k1"] == kwargs['k1']) &
+            (df["k2"] == kwargs['k2'])
+            # & (df["simulations"] == kwargs['simul'])  ## Not yet ready
+            ]
+        fig = px.line(df_subset, x='top_X_percent', y='probability')
+        return fig
+    elif kwargs['simul'] is None:  # Corr, K1, K2, topX
+        pass
+    else:
+        print("Something went wrong in plotter function!")
+        return None
+
+
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 SIDEBAR = html.Div([
@@ -16,20 +67,20 @@ SIDEBAR = html.Div([
     # html.Hr(),
     dbc.Card([
         dbc.CardHeader([
-            dcc.Tabs(id="molecule-tabs", value='tab-molecule-1',
-                     children=[dcc.Tab(id='mol1', label='Mol1', value='tab-molecule-1'),
-                               dcc.Tab(id='mol2', label='Mol2', value='tab-molecule-2'),
-                               dcc.Tab(id='mol3', label='Mol3', value='tab-molecule-3'),
-                               dcc.Tab(id='mol4', label='Mol4', value='tab-molecule-4'),]),
+            dbc.Tabs(id="molecule-tabs", active_tab='tab-molecule-1',
+                     children=[dbc.Tab(id='mol1', label='Molecule 1', tab_id='tab-molecule-1'),
+                               dbc.Tab(id='mol2', label='Molecule 2', tab_id='tab-molecule-2'),
+                               dbc.Tab(id='mol3', label='Molecule 3', tab_id='tab-molecule-3'),
+                               dbc.Tab(id='mol4', label='Molecule 4', tab_id='tab-molecule-4'),], class_name="molecule-tabs"),
             dbc.Tooltip("Molecule 1", target='mol1', placement='bottom'),
             dbc.Tooltip("Molecule 2", target='mol2', placement='bottom'),
             dbc.Tooltip("Molecule 3", target='mol3', placement='bottom'),
             dbc.Tooltip("Molecule 4", target='mol4', placement='bottom'),
-        ]),
+        ], className="sidebar-card-header"),
         dbc.CardBody([
             html.Div([
                 dbc.Label("Correlation", html_for='correlation-slider',
-                          style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'center'}),
+                          style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}),
                 # daq.NumericInput(id='correlation-input', value=0, min=-1, max=1, style={'margin-bottom': '1rem'}),
                 # dbc.FormText("Enter specific value for correlation: ", color="secondary"),
                 dbc.Input(type="number", id="correlation-input", min=-1, max=1, step=0.01, placeholder="Enter correlation value",
@@ -49,10 +100,10 @@ SIDEBAR = html.Div([
                     target="correlation-slider",
                     placement="bottom"
                 )
-            ], className="sidebar-div"),
+            ], id="corr-div", className="sidebar-div"),
             html.Div([
                 dbc.Label("K1", html_for='k1-slider',
-                          style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'center'}),
+                          style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}),
                 dbc.Input(type="number", id="k1-input", min=0, max=1758, step=50, placeholder="Enter K1 samples",
                           style={'margin-left': '1rem', 'margin-bottom': '1rem', 'width': '10rem'}),
                 dcc.Slider(
@@ -70,10 +121,10 @@ SIDEBAR = html.Div([
                     target="k1-slider",
                     placement="bottom"
                 )
-            ], className="sidebar-div"),
+            ], id="k1-div", className="sidebar-div"),
             html.Div([
                 dbc.Label("K2", html_for='k2-slider',
-                          style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'center'}),
+                          style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}),
                 dbc.Input(type="number", id="k2-input", min=0, max=1758, step=50, placeholder="Enter K2 samples",
                           style={'margin-left': '1rem', 'margin-bottom': '1rem', 'width': '10rem'}),
                 dcc.Slider(
@@ -91,10 +142,10 @@ SIDEBAR = html.Div([
                     target="k2-slider",
                     placement="bottom"
                 )
-            ], className="sidebar-div"),
+            ], id="k2-div", className="sidebar-div"),
             html.Div([
                 dbc.Label("Top X%", html_for='topX-slider',
-                          style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'center'}),
+                          style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}),
                 dbc.Input(type="number", id="topX-input", min=0, max=1758, step=50, placeholder="Enter Top X% ",
                           style={'margin-left': '1rem', 'margin-bottom': '1rem', 'width': '10rem'}),
                 dcc.Slider(
@@ -112,10 +163,10 @@ SIDEBAR = html.Div([
                     target="topX-slider",
                     placement="bottom"
                 )
-            ], className="sidebar-div"),
+            ], id="topX-div", className="sidebar-div"),
             html.Div([
                 dbc.Label("Simulations", html_for='simul-slider',
-                          style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'center'}),
+                          style={'margin-left': '1rem', 'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}),
                 dbc.Input(type="number", id="simul-input", min=1, max=1000, step=100, placeholder="Enter Simulations ",
                           style={'margin-left': '1rem', 'margin-bottom': '1rem', 'width': '10rem'}),
                 dcc.Slider(
@@ -133,19 +184,19 @@ SIDEBAR = html.Div([
                     target="simul-slider",
                     placement="bottom"
                 )
-            ], className="sidebar-div"),
+            ], id="simul-div", className="sidebar-div"),
         ])
-    ], className=""),
+    ], className="sidebar-card"),
 ], className="sidebar-style")
 
 MAIN_CONTENT = html.Div([
     # html.H4("Main Content", className="display-4"),
-    dcc.Tabs(id="graphs-tabs", value="tab-graph-1",
-             children=[dcc.Tab(label='Correlation', value='tab-graph-1', children=[dcc.Graph(id='graph-1')], className="graph-tabs"),
-                       dcc.Tab(label='K1', value='tab-graph-2', children=[dcc.Graph(id='graph-2')], className="graph-tabs"),
-                       dcc.Tab(label='K2', value='tab-graph-3', children=[dcc.Graph(id='graph-3')], className="graph-tabs"),
-                       dcc.Tab(label='Top X%', value='tab-graph-4', children=[dcc.Graph(id='graph-4')], className="graph-tabs"),
-                       dcc.Tab(label='Simulations', value='tab-graph-5', children=[dcc.Graph(id='graph-5')], className="graph-tabs")],
+    dbc.Tabs(id="graphs-tabs", active_tab="tab-graph-1",
+             children=[dbc.Tab(label='Correlation', id='corr-tab', tab_id='tab-graph-1', children=[dcc.Graph(id='graph-1')], class_name="", tab_class_name="nav nav-pills"),
+                       dbc.Tab(label='K1', id='k1-tab', tab_id='tab-graph-2', children=[dcc.Graph(id='graph-2')], class_name="", tab_class_name="nav nav-pills"),
+                       dbc.Tab(label='K2', id='k2-tab', tab_id='tab-graph-3', children=[dcc.Graph(id='graph-3')], class_name="", tab_class_name="nav nav-pills"),
+                       dbc.Tab(label='Top X%', id='topX-tab', tab_id='tab-graph-4', children=[dcc.Graph(id='graph-4')], class_name="", tab_class_name="nav nav-pills"),
+                       dbc.Tab(label='Simulations', id='simul-tab', tab_id='tab-graph-5', children=[dcc.Graph(id='graph-5')], class_name="", tab_class_name="nav nav-pills")],
              className="graph-tabs-container")
 ], className="content-style")
 
@@ -153,8 +204,8 @@ MAIN_CONTENT = html.Div([
 app.layout = dbc.Container(
     dbc.Row(
         [
-            dbc.Col(SIDEBAR, width=4, style={"height": "100vh",  "overflowY": "auto"}, className="hide-scrollbar"),
-            dbc.Col(MAIN_CONTENT, width=8, style={"height": "100vh"}),
+            dbc.Col(SIDEBAR, width=5, style={"height": "100vh",  "overflowY": "auto"}, className="hide-scrollbar"),
+            dbc.Col(MAIN_CONTENT, width=7, style={"height": "100vh"}),
         ],
         style={"height": "100vh"}
     ),
@@ -166,21 +217,36 @@ app.layout = dbc.Container(
 
 # Callback for main content graph tab rendering
 @app.callback(
-    Output("graph-1", "figure"),
-    Input("graphs-tabs", "value")
+    [Output("corr-div", "className"),
+     Output("k1-div", "className"),
+     Output("k2-div", "className"),
+     Output("topX-div", "className"),
+     Output("simul-div", "className")],
+    Input("graphs-tabs", "active_tab")
 )
-def graphs_tabs_render(value):
-    if value == 'tab-graph-1':
-        return None
-    elif value == 'tab-graph-2':
-        return None
-    elif value == 'tab-graph-3':
-        return None
-    elif value == 'tab-graph-4':
-        return None
-    elif value == 'tab-graph-5':
-        return None
-    return html.Div("No content available.")
+def graphs_tabs_render(active_tab):
+    if active_tab == 'tab-graph-1':  # Correlation
+        update_1 = "sidebar-div-disabled" # Greyout
+        update_2 = "sidebar-div"  # Color back
+        return [update_1, update_2, update_2, update_2, update_2]
+    elif active_tab == 'tab-graph-2':
+        update_1 = "sidebar-div-disabled"  # Greyout
+        update_2 = "sidebar-div"  # Color back
+        return [update_2, update_1, update_2, update_2, update_2]
+    elif active_tab == 'tab-graph-3':
+        update_1 = "sidebar-div-disabled"  # Greyout
+        update_2 = "sidebar-div"  # Color back
+        return [update_2, update_2, update_1, update_2, update_2]
+    elif active_tab == 'tab-graph-4':
+        update_1 = "sidebar-div-disabled"  # Greyout
+        update_2 = "sidebar-div"  # Color back
+        return [update_2, update_2, update_2, update_1, update_2]
+    elif active_tab == 'tab-graph-5':
+        update_1 = "sidebar-div-disabled"  # Greyout
+        update_2 = "sidebar-div"  # Color back
+        return [update_2, update_2, update_2, update_2, update_1]
+    return [html.Div("No content available.")]
+
 
 # Callback for sidebar adjustments for graphs
 @app.callback(
@@ -190,21 +256,47 @@ def graphs_tabs_render(value):
      Output("graph-4", "figure"),
      Output("graph-5", "figure")],
 
-    [Input("graphs-tabs", "value"),
-     Input("correlation-slider", "value")],
+    [Input("molecule-tabs", "active_tab"),
+     Input("graphs-tabs", "active_tab"),
+     Input("correlation-slider", "value"),
+     Input("k1-slider", "value"),
+     Input("k2-slider", "value"),
+     Input("topX-slider", "value"),
+     Input("simul-slider", "value")],
 )
-def correlation_slider_graph_render(graph_tabs, corr_slider):
-    if graph_tabs == 'tab-graph-1':
-        # Render something with correlation slider value
-        return None, no_update, no_update, no_update, no_update
-    elif graph_tabs == 'tab-graph-2':
-        return no_update, None, no_update, no_update, no_update
-    elif graph_tabs == 'tab-graph-3':
-        return no_update, no_update, None, no_update, no_update
-    elif graph_tabs == 'tab-graph-4':
-        return no_update, no_update, no_update, None, no_update
-    elif graph_tabs == 'tab-graph-5':
-        return no_update, no_update, no_update, no_update, None
+def correlation_slider_graph_render(mol_active_tab, grph_active_tab, corr_slr_val, k1_slr_val, k2_slr_val, topX_slr_val, simul_slr_val):
+    df = {
+        "tab-molecule-1": mol1_df,
+        # "tab-molecule-2": mol2_df,
+        "tab-molecule-3": mol3_df,
+        # "tab-molecule-4": mol4_df,
+    }.get(mol_active_tab)
+
+    # Temporary Adjustment
+    corr_slr_val = max(min(corr_slr_val, df['correlation'].max()), df['correlation'].min())
+    k1_slr_val = max(min(k1_slr_val, df['k1'].max()), df['k1'].min())
+    k2_slr_val = max(min(k2_slr_val, df['k2'].max()), df['k2'].min())
+    topX_slr_val = max(min(topX_slr_val, df['top_X_percent'].max()), df['top_X_percent'].min())
+
+    if grph_active_tab == 'tab-graph-1':  # Correlation Tab
+        fig_update = plotter(df, corr=None, k1=k1_slr_val, k2=k2_slr_val, topX=topX_slr_val, simul=simul_slr_val)
+        return [fig_update, no_update, no_update, no_update, no_update]
+
+    elif grph_active_tab == 'tab-graph-2':  # K1 Tab
+        fig_update = plotter(df, corr=corr_slr_val, k1=None, k2=k2_slr_val, topX=topX_slr_val, simul=simul_slr_val)
+        return [no_update, fig_update, no_update, no_update, no_update]
+
+    elif grph_active_tab == 'tab-graph-3':  # K2 Tab
+        fig_update = plotter(df, corr=corr_slr_val, k1=k1_slr_val, k2=None, topX=topX_slr_val, simul=simul_slr_val)
+        return [no_update, no_update, fig_update, no_update, no_update]
+
+    elif grph_active_tab == 'tab-graph-4':  # topX Tab
+        fig_update = plotter(df, corr=corr_slr_val, k1=k1_slr_val, k2=k2_slr_val, topX=None, simul=simul_slr_val)
+        return [no_update, no_update, no_update, fig_update, no_update]
+
+    elif grph_active_tab == 'tab-graph-5':  # Simulations Tab
+        fig_update = plotter(df, corr=corr_slr_val, k1=k1_slr_val, k2=k2_slr_val, topX=topX_slr_val, simul=None)
+        return [no_update, no_update, no_update, no_update, fig_update]
 
 #### CALLBACKS-END ####
 
