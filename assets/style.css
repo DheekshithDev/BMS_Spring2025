@@ -1,18 +1,21 @@
 /* assets/style.css */
+:root {
+    --primary: #BE2BBB;        /* your new “primary” colour */
+}
 
 /* Sidebar Styling-START */
 .sidebar-style {
-    /*position: fixed;*/
-    /*top: 0;*/
-    /*left: 0;*/
-    /*bottom: 0;*/
-    /*width: 30rem;*/
+    position: fixed;
+    top: 65px;
+    left: 0;
+    bottom: 0;
+    width: 60rem;
     padding: 1rem 1rem;
     /* background-color: #f8f9fa; */
-    /*display: flex;*/
-    /*flex-direction: column;*/
+    display: flex;
+    flex-direction: column;
     /*height: 100vh;*/
-    /*overflow-y: auto;*/
+    overflow-y: hidden;
     /*scrollbar-width: none; !* For Firefox *!*/
     /*-ms-overflow-style: none;  !* For Internet Explorer 10+ *!*/
 }
@@ -31,6 +34,14 @@
 /* For Chrome, Safari, and Opera */
 .sidebar-style::-webkit-scrollbar {
     display: none;
+}
+
+/* Sidebar Styling – additions */
+.sidebar-card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* pushes blocks apart */
+    height: 100%;                   /* lets it fill the card */
 }
 
 .sidebar-card {
@@ -69,6 +80,23 @@
   text-align: center;         /* Center the header text */
 }
 
+/* Copilot off‑canvas panel */
+.offcanvas-bottom.copilot-window-style {
+    height: 30vh;               /* panel height */
+    width: 62%;
+    max-width: 100%;/* full viewport width (redundant but explicit) */
+    border: 2px solid #EBBEFA;
+    left: auto;
+    right: 0;
+    padding: 1rem;
+}
+
+/* Let the textarea expand and use remaining height */
+.copilot-input {
+    height: 100%;      /* grow and shrink as needed */
+    width: 100%;
+    resize: none;        /* optional: disable drag‑to‑resize */
+}
 
 .molecule-tabs .nav-link {
     color: #B03DBE !important;
@@ -106,6 +134,8 @@
 .content-style {
     /* margin-left: 30rem;
     margin-right: 2rem; */
+    height: 100vh;         /* fill the viewport */
+    overflow-y: auto;      /* THIS is the only scrollable area */
     width: 100%;
     text-align: center;
     padding: 1rem 1rem;
@@ -129,6 +159,8 @@
     /*background-color: #D14CE0 !important;*/
     /*color: white !important;*/
     /*font-weight: bold;*/
+    /*width: 100%; */
+    /*text-align: center;*/
     /*font-size: 16px;*/
     /*padding: 10px 24px;*/
     /*margin: 0 6px 0 0;*/
@@ -162,4 +194,35 @@
 /*    border-bottom: 1px solid #ffffff; !* creates a seamless connection with the content area *!*/
 /*    z-index: 1;*/
 /*}*/
+
+/* Text colour */
+.brand-text {
+    color: var(--primary);
+    font-weight: bold;
+
+}
+
+/* Optional: different colour on hover/focus */
+.brand-text:hover,
+.brand-text:focus {
+    color: purple;
+}
+
+/* Frosted‑glass purple gradient for the navbar */
+.glass-navbar {
+    margin-bottom: 0.6rem;
+    background: linear-gradient(
+    0.25turn,          /* left → right */
+    #f8f6ff 0%,        /* near‑white, slight purple tint */
+    #d4c2ff 35%,       /* light lavender */
+    #B03DBE 70%,       /* medium purple */
+    purple 100%       /* deep royal purple */);
+    backdrop-filter: blur(14px) saturate(170%);
+    -webkit-backdrop-filter: blur(14px) saturate(170%);  /* Safari support */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);  /* thin glass edge */
+    /* Shadow is applied via Bootstrap's `shadow-lg` class */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+
 /* Main content style-END */
